@@ -14,7 +14,7 @@ export class TaskCreateDto {
     parentTaskId: string | undefined;
 
     @ApiProperty()
-    subtasksIds: TaskCreateDto[];
+    subtasksIds: string[];
 
     @ApiProperty()
     creatorId: string;
