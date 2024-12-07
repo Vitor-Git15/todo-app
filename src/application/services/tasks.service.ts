@@ -1,14 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { TaskCreateDto } from "src/domain/dto/task_create.dto";
-import { TaskUpdateDto } from "src/domain/dto/task_update.dto";
+import { TaskCreateDto, TaskUpdateDto } from "src/domain/dto/task.dto";
 import { Task } from "src/domain/entities/task.entity";
 import { User } from "src/domain/entities/user.entity";
-import { TaskNotFoundError } from "src/domain/erros/task_not_found.error";
-import { UserNotFoundError } from "src/domain/erros/user_not_found.error";
 import { Repository } from "typeorm";
 import { Tag } from "src/domain/entities/tag.entity";
 import { Status } from "src/domain/entities/status.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { EntityNotFoundError } from "src/domain/erros/entity_not_found.error";
 
 @Injectable()
 export class TasksService {
@@ -29,7 +27,7 @@ export class TasksService {
 
     async findByStatus(statusId: string): Promise<Task[]> {
         const status = await this.statusRepository.findOneBy({ id: statusId });
-        if (!status) throw new TaskNotFoundError();
+        if (!status) throw new EntityNotFoundError(Status.constructor.name);
         return this.tasksRepository.createQueryBuilder("task")
             .leftJoinAndSelect("task.status", "status")
             .where("status.id = :statusId", { statusId })
@@ -38,19 +36,19 @@ export class TasksService {
 
     async findParentTask(taskId: string) {
         const task = await this.tasksRepository.findOneBy({ id: taskId });
-        if (!task) throw new TaskNotFoundError();
+        if (!task) throw new EntityNotFoundError(Task.constructor.name);
         return task.parentTask;
     }
 
     async findSubTasks(taskId: string) {
         const task = await this.tasksRepository.findOneBy({ id: taskId });
-        if (!task) throw new TaskNotFoundError();
+        if (!task) throw new EntityNotFoundError(Task.constructor.name);
         return task.subTasks;
     }
 
     async findByAssignee(userId: string): Promise<Task[]> {
         const user = await this.usersRepository.findOneBy({ id: userId });
-        if (!user) throw new UserNotFoundError();
+        if (!user) throw new EntityNotFoundError(User.constructor.name);
         return this.tasksRepository.createQueryBuilder("task")
             .leftJoinAndSelect("task.assignedUsers", "user")
             .where("user.id = :userId", { userId })
@@ -59,7 +57,7 @@ export class TasksService {
 
     async findByCreator(userId: string): Promise<Task[]> {
         const user = await this.usersRepository.findOneBy({ id: userId });
-        if (!user) throw new UserNotFoundError();
+        if (!user) throw new EntityNotFoundError(User.constructor.name);
         return this.tasksRepository.createQueryBuilder("task")
             .leftJoinAndSelect("task.creator", "user")
             .where("user.id = :userId", { userId })
@@ -68,14 +66,14 @@ export class TasksService {
 
     async findByTag(tagId: string): Promise<Task[]> {
         const tag = await this.tagsRepository.findOneBy({ id: tagId });
-        if (!tag) throw new TaskNotFoundError();
+        if (!tag) throw new EntityNotFoundError(Tag.constructor.name)
         return this.tasksRepository.createQueryBuilder("task")
             .leftJoinAndSelect("task.tags", "tag")
             .where("tag.id = :tagId", { tagId })
             .getMany();
     }
 
-    async createTask(taskDto: TaskCreateDto): Promise<Task> {
+    async create(taskDto: TaskCreateDto): Promise<Task> {
         const task = new Task();
 
         task.mapFromDto(
@@ -89,9 +87,9 @@ export class TasksService {
         return this.tasksRepository.save(task);
     }
 
-    async updateTask(updatedTask: TaskUpdateDto): Promise<Task> {
+    async update(updatedTask: TaskUpdateDto): Promise<Task> {
         const task = await this.tasksRepository.findOneBy({ id: updatedTask.id });
-        if (!task) throw new TaskNotFoundError();
+        if (!task) throw new EntityNotFoundError(Task.constructor.name);
 
         task.mapFromDto(
             updatedTask,
@@ -104,9 +102,9 @@ export class TasksService {
         return this.tasksRepository.save(task);
     }
 
-    async deleteTask(id: string): Promise<void> {
+    async delete(id: string): Promise<void> {
         const task = await this.tasksRepository.findOneBy({ id });
-        if (!task) throw new TaskNotFoundError();
+        if (!task) throw new EntityNotFoundError(Task.constructor.name);
         await this.tasksRepository.delete(task.id);
     }
 }

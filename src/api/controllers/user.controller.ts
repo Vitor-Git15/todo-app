@@ -1,8 +1,7 @@
 import { Controller, Get, Post, Body, Put, Query, Delete } from '@nestjs/common';
 import { UserService } from 'src/application/services/user.service';
 import { ChangePasswordDto } from 'src/domain/dto/change_password.dto';
-import { UserDto } from 'src/domain/dto/user.dto';
-import { UserCreateDto } from 'src/domain/dto/user_create.dto';
+import { UserReturnDto, UserCreateDto } from 'src/domain/dto/user.dto';
 import { User } from 'src/domain/entities/user.entity';
 
 @Controller('users')
@@ -18,13 +17,13 @@ export class UserController {
     }
 
     @Get('all')
-    async getUsers(): Promise<UserDto[]> {
-        return (await this.userService.findAll()).map(user => new UserDto(user));
+    async getUsers(): Promise<UserReturnDto[]> {
+        return (await this.userService.findAll()).map(user => new UserReturnDto(user));
     }
 
     @Post()
     async createUser(@Body() userDto: UserCreateDto): Promise<User> {
-        return this.userService.createUser(userDto);
+        return this.userService.create(userDto);
     }
 
     @Put("passwd")
@@ -34,6 +33,6 @@ export class UserController {
 
     @Delete()
     async deleteUser(@Query('id') id: string): Promise<void> {
-        return this.userService.deleteUser(id);
+        return this.userService.delete(id);
     }
 }

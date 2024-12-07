@@ -10,7 +10,13 @@ import { Task } from './domain/entities/task.entity';
 import { AppController } from './api/controllers/app.controller';
 import { AppService } from './application/services/app.service';
 import { TasksController } from './api/controllers/tasks.controller';
-import { TasksService } from './application/services/tasks.service';
+import { TasksService as TaskService } from './application/services/tasks.service';
+import { CommentService } from './application/services/comment.service';
+import { TagService } from './application/services/tag.service';
+import { StatusService } from './application/services/status.service';
+import { CommentController } from './api/controllers/comment.controller';
+import { StatusController } from './api/controllers/status.controller';
+import { TagController } from './api/controllers/tag.controller';
 
 @Module({
   imports: [
@@ -23,7 +29,21 @@ import { TasksService } from './application/services/tasks.service';
     }),
     TypeOrmModule.forFeature([Comment, Status, Tag, Task, User]),
   ],
-  controllers: [AppController, UserController, TasksController],
-  providers: [AppService, UserService, TasksService],
+  controllers: [
+    AppController,
+    CommentController,
+    StatusController,
+    TagController,
+    TasksController,
+    UserController,
+  ],
+  providers: [
+    AppService,
+    CommentService,
+    StatusService,
+    TagService,
+    TaskService,
+    UserService,
+  ],
 })
 export class AppModule { }

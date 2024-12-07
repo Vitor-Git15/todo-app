@@ -3,10 +3,10 @@ import { User } from "./user.entity";
 import { Status } from "./status.entity";
 import { Tag } from "./tag.entity";
 import { BaseEntity } from "./base.entity";
-import { TaskUpdateDto } from "../dto/task_update.dto";
 import { NotImplementedException } from "@nestjs/common";
-import { TaskCreateDto } from "../dto/task_create.dto";
+import { TaskCreateDto } from "../dto/task.dto";
 import { Comment } from "./comment.entity";
+import { EntityNotFoundError } from "../erros/entity_not_found.error";
 
 @Entity()
 export class Task extends BaseEntity {
@@ -57,13 +57,13 @@ export class Task extends BaseEntity {
 
     protected async setStatus(statusId: string, statusRepository: Repository<Status>) {
         const status = await statusRepository.findOneBy({ id: statusId });
-        if (!status) throw new NotImplementedException();
+        if (!status) throw new EntityNotFoundError(Status.constructor.name);
         this.status = status;
     }
 
     protected async setParentTask(parentTaskId: string, taskRepository: Repository<Task>) {
         const parentTask = await taskRepository.findOneBy({ id: parentTaskId });
-        if (!parentTask) throw new NotImplementedException();
+        if (!parentTask) throw new EntityNotFoundError(Task.constructor.name, 'Parent task not found');
         this.parentTask = parentTask;
     }
 
@@ -71,7 +71,7 @@ export class Task extends BaseEntity {
         const subtasks = await Promise.all(
             subtasksIds.map(async subtaskId => {
                 const subtaskEntity = await taskRepository.findOneBy({ id: subtaskId });
-                if (!subtaskEntity) throw new NotImplementedException();
+                if (!subtaskEntity) throw new EntityNotFoundError(Task.constructor.name, 'Subtask not found');
                 return subtaskEntity;
             })
         );
@@ -80,7 +80,7 @@ export class Task extends BaseEntity {
 
     protected async setCreator(creatorId: string, userRepository: Repository<User>) {
         const creator = await userRepository.findOneBy({ id: creatorId });
-        if (!creator) throw new NotImplementedException();
+        if (!creator) throw new EntityNotFoundError(User.constructor.name, 'Creator not found');
         this.creator = creator;
     }
 
@@ -88,7 +88,7 @@ export class Task extends BaseEntity {
         const assignedUsers = await Promise.all(
             assignedUserIds.map(async userId => {
                 const user = await userRepository.findOneBy({ id: userId });
-                if (!user) throw new NotImplementedException();
+                if (!user) throw new EntityNotFoundError(User.constructor.name, 'Assigned user not found');
                 return user;
             })
         );
@@ -99,7 +99,7 @@ export class Task extends BaseEntity {
         const tags = await Promise.all(
             tagsIds.map(async tagId => {
                 const tag = await tagRepository.findOneBy({ id: tagId });
-                if (!tag) throw new NotImplementedException();
+                if (!tag) throw new EntityNotFoundError(Tag.constructor.name);
                 return tag;
             })
         );

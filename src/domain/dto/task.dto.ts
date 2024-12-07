@@ -25,3 +25,8 @@ export class TaskCreateDto {
     @ApiProperty()
     tagsIds: string[];
 }
+
+export class TaskUpdateDto extends TaskCreateDto {
+    @ApiProperty()
+    id: string;
+}
