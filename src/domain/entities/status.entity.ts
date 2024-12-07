@@ -1,11 +1,8 @@
 import { Entity, Column } from "typeorm";
-import { BaseEntityWithIdAndTimestamps } from "./base.entity";
+import { BaseEntity } from "./base.entity";
 
 @Entity()
-export class Status extends BaseEntityWithIdAndTimestamps {
+export class Status extends BaseEntity {
     @Column()
     name: string;
-
-    @Column()
-    value: number; // Will be returned sorted by this value
 }

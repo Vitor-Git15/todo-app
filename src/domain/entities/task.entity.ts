@@ -1,11 +1,13 @@
-import { Entity, Column, OneToMany, ManyToOne, ManyToMany } from "typeorm";
+import { Entity, Column, OneToMany, ManyToOne, ManyToMany, JoinTable } from "typeorm";
 import { User } from "./user.entity";
 import { Status } from "./status.entity";
 import { Tag } from "./tag.entity";
-import { BaseEntityWithIdAndTimestamps } from "./base.entity";
+import { BaseEntity } from "./base.entity";
+import { TaskUpdateDto } from "../dto/task_update.dto";
+import { NotImplementedException } from "@nestjs/common";
 
 @Entity()
-export class Task extends BaseEntityWithIdAndTimestamps {
+export class Task extends BaseEntity {
     @Column()
     title: string;
 
@@ -21,12 +23,17 @@ export class Task extends BaseEntityWithIdAndTimestamps {
     @OneToMany(type => Task, task => task.parentTask)
     subTasks: Task[];
 
-    @OneToMany(type => User, user => user.createdTasks)
+    @ManyToOne(type => User, user => user.createdTasks)
     creator: User;
 
     @ManyToMany(type => User, user => user.tasks)
+    @JoinTable()
     assignedUsers: User[];
 
     @ManyToMany(type => Tag)
     tags: Tag[];
+
+    updateData(taskUpdateDto: TaskUpdateDto) {
+        throw new NotImplementedException();
+    }
 }

@@ -1,8 +1,8 @@
 import { Entity, Column } from "typeorm";
-import { BaseEntityWithIdAndTimestamps } from "./base.entity";
+import { BaseEntity } from "./base.entity";
 
 @Entity()
-export class Tag extends BaseEntityWithIdAndTimestamps {
+export class Tag extends BaseEntity {
     @Column()
     name: string;
 }
