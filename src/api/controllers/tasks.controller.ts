@@ -13,7 +13,7 @@ export class TasksController {
     }
 
     @Post()
-    async createTask(@Body() taskDto: TaskCreateDto) {
+    async createTask(@Body() taskDto: TaskCreateDto): Promise<Task> {
         return this.tasksService.createTask(taskDto);
     }
 }
