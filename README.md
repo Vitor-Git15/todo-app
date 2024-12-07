@@ -1,12 +1,22 @@
-# Todo App
-## Integrantes
-- Jorge Augusto de Lima e Sivla
+#Todo App
+## 1. Integrantes
+- Jorge Augusto de Lima e Silva
 - Vitor Emanuel Ferreira Vital
 
-## Funcionalidades
-Foi implementado o backend de um gerenciador de tarefas. Dentre as funcionalidades, podemos criar, atualizar e deletar tarefas, sendo possível adicionar tags, comentários e status à cada atividade.
+## 2. O Sistema
+Este projeto é um gerenciador de tarefas (Todo App) com backend desenvolvido para facilitar a organização e a delegação de atividades. Ele permite criar, gerenciar e organizar tarefas de forma eficiente, oferecendo suporte para atribuição de responsabilidades, categorização e estruturação em subtarefas.
 
-Também é possível atribuir tarefas a demais usuários do sistema, os quais precisam ser registrados no sistema. Por fim, também é possível criar uma estrutura de árvore entre as task, em que uma task pode ter diversas subtasks.
+### 2.1. Funcionalidades
+1. Gestão de Tarefas:
+   - Criar, atualizar e deletar tarefas.
+   - Adicionar tags para categorização.
+   - Gerenciar comentários e status de cada atividade.
+2. Atribuição de Tarefas:
+   - Permite atribuir tarefas a outros usuários cadastrados no sistema.
+3. Hierarquia de Tarefas:
+   - Estrutura em forma de árvore, permitindo que uma tarefa tenha múltiplas subtarefas associadas.
 
-## Tecnologias
-Foi utilizado o **Nest.js** como framework base para o sistema e **typeorm** para intermediar a conexão com o banco de dados, o qual é um **sqlite3**.
+## 3. Tecnologias Utilizadas
+- **Nest.js**: Framework base para o desenvolvimento do backend.
+- **TypeORM**: ORM para gerenciar a conexão com o banco de dados.
+- **SQLite3**: Banco de dados utilizado para armazenamento.
