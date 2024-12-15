@@ -36,10 +36,17 @@ jobs:
 
       - name: Check coverage threshold
         run: |
-          # Verifica se a cobertura é superior a 70%
-          COVERAGE=$(cat coverage/coverage-summary.json | jq .total.statements.pct)
-          if (( $(echo "$COVERAGE < 70" | bc -l) )); then
-            echo "Test coverage is below 70%. Coverage is $COVERAGE%."
-            exit 1  # Interrompe o processo caso a cobertura seja abaixo de 70%
-          fi
-          echo "Test coverage is sufficient: $COVERAGE%"
+           $coverage = Get-Content ./coverage-summary.txt | Select-String -Pattern "All files.*\|\s+(\d+\.\d+)"
+           if ($null -eq $coverage) {
+               Write-Error "Não foi possível determinar a cobertura."
+               exit 1
+           }
+
+           $match = [regex]::Match($coverage, '\|\s+(\d+\.\d+)%')
+           $coverageValue = [double]$match.Groups[1].Value
+
+           if ($coverageValue -lt 70) {
+               Write-Error "A cobertura ($coverageValue%) é menor que 70%."
+               exit 1
+           }
+        shell: pwsh
