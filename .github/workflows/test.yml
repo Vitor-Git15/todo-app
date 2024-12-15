@@ -44,4 +44,9 @@ jobs:
 
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Vitor-Git15/todo-app
+          files: ./coverage/coverage-summary.json  # Caminho do arquivo de cobertura
+          fail_ci_if_error: true  # Faz a CI falhar se o upload falhar
