@@ -50,3 +50,5 @@ jobs:
                exit 1
            }
         shell: pwsh
+      - name: Codecov
+        uses: codecov/codecov-action@v5.1.1
