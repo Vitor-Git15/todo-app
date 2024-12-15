@@ -14,7 +14,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]  # Teste em Linux, MacOS e Windows
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -24,7 +24,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  # Defina a versão de Node.js que você está utilizando
+          node-version: '16'
 
       - name: Install dependencies
         run: |
@@ -32,27 +32,27 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          npm run test:cov  # Roda os testes e gera a cobertura
+          npm run test:cov
 
       - name: Check coverage threshold
         run: |
           if [[ "$RUNNER_OS" == "Windows" ]]; then
-            $coverage = (Get-Content -Path .\coverage\lcov-report\index.html | Select-String -Pattern "Lines\s+:\s+(\d+\.\d+)%").Matches.Groups[1].Value
+            $coverage = (Get-Content -Path .\coverage\coverage-summary.json | ConvertFrom-Json).total.statements.pct
             if ([double]$coverage -lt 70) {
-              Write-Error "A cobertura está abaixo de 70% ($coverage%)"
+              Write-Error "Test coverage is below 70%. Coverage is $coverage%."
               exit 1
             } else {
-              Write-Host "Cobertura de testes suficiente: $coverage%"
+              Write-Host "Test coverage is sufficient: $coverage%"
             }
           else
-            coverage=$(grep -Po 'Lines\s+:\s+\K\d+\.\d+' ./coverage/lcov-report/index.html)
-            if (( $(echo "$coverage < 70" | bc -l) )); then
-              echo "A cobertura está abaixo de 70% ($coverage%)"
+            COVERAGE=$(cat coverage/coverage-summary.json | jq .total.statements.pct)
+            if (( $(echo "$COVERAGE < 70" | bc -l) )); then
+              echo "Test coverage is below 70%. Coverage is $COVERAGE%."
               exit 1
-            else
-              echo "Cobertura de testes suficiente: $coverage%"
             fi
+            echo "Test coverage is sufficient: $COVERAGE%"
           fi
         shell: bash
-      - name: Codecov
-        uses: codecov/codecov-action@v5.1.1
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
