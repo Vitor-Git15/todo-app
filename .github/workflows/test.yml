@@ -36,19 +36,23 @@ jobs:
 
       - name: Check coverage threshold
         run: |
-           $coverage = Get-Content ./coverage-summary.txt | Select-String -Pattern "All files.*\|\s+(\d+\.\d+)"
-           if ($null -eq $coverage) {
-               Write-Error "Não foi possível determinar a cobertura."
-               exit 1
-           }
-
-           $match = [regex]::Match($coverage, '\|\s+(\d+\.\d+)%')
-           $coverageValue = [double]$match.Groups[1].Value
-
-           if ($coverageValue -lt 70) {
-               Write-Error "A cobertura ($coverageValue%) é menor que 70%."
-               exit 1
-           }
-        shell: pwsh
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            $coverage = (Get-Content -Path .\coverage\lcov-report\index.html | Select-String -Pattern "Lines\s+:\s+(\d+\.\d+)%").Matches.Groups[1].Value
+            if ([double]$coverage -lt 70) {
+              Write-Error "A cobertura está abaixo de 70% ($coverage%)"
+              exit 1
+            } else {
+              Write-Host "Cobertura de testes suficiente: $coverage%"
+            }
+          else
+            coverage=$(grep -Po 'Lines\s+:\s+\K\d+\.\d+' ./coverage/lcov-report/index.html)
+            if (( $(echo "$coverage < 70" | bc -l) )); then
+              echo "A cobertura está abaixo de 70% ($coverage%)"
+              exit 1
+            else
+              echo "Cobertura de testes suficiente: $coverage%"
+            fi
+          fi
+        shell: bash
       - name: Codecov
         uses: codecov/codecov-action@v5.1.1
