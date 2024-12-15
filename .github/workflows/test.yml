@@ -12,11 +12,10 @@ on:
 
 jobs:
   test:
+    runs-on: ubuntu-latest   # Usado para execução no Linux
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-
+        os: [ubuntu-latest, macos-latest, windows-latest]  # Definindo os sistemas operacionais para o teste
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -24,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '16'  # Use a versão do Node.js que você está utilizando
 
       - name: Install dependencies
         run: |
@@ -32,27 +31,17 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          npm run test:cov
+          npm run test -- --coverage  # Execute seus testes com cobertura
 
       - name: Check coverage threshold
         run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            $coverage = (Get-Content -Path .\coverage\coverage-summary.json | ConvertFrom-Json).total.statements.pct
-            if ([double]$coverage -lt 70) {
-              Write-Error "Test coverage is below 70%. Coverage is $coverage%."
-              exit 1
-            } else {
-              Write-Host "Test coverage is sufficient: $coverage%"
-            }
-          else
-            COVERAGE=$(cat coverage/coverage-summary.json | jq .total.statements.pct)
-            if (( $(echo "$COVERAGE < 70" | bc -l) )); then
-              echo "Test coverage is below 70%. Coverage is $COVERAGE%."
-              exit 1
-            fi
-            echo "Test coverage is sufficient: $COVERAGE%"
+          COVERAGE=$(cat coverage/coverage-summary.json | jq .total.statements.pct)
+          if (( $(echo "$COVERAGE < 70" | bc -l) )); then
+            echo "Test coverage is below 70%. Coverage is $COVERAGE%."
+            exit 1  # Interrompe a execução se a cobertura for menor que 70%
           fi
-        shell: bash
+          echo "Test coverage is sufficient: $COVERAGE%"
+
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
