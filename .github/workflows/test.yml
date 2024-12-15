@@ -1,0 +1,45 @@
+name: Run Tests and Check Coverage
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]  # Teste em Linux, MacOS e Windows
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # Defina a versão de Node.js que você está utilizando
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run tests with coverage
+        run: |
+          npm run test:cov  # Roda os testes e gera a cobertura
+
+      - name: Check coverage threshold
+        run: |
+          # Verifica se a cobertura é superior a 70%
+          COVERAGE=$(cat coverage/coverage-summary.json | jq .total.statements.pct)
+          if (( $(echo "$COVERAGE < 70" | bc -l) )); then
+            echo "Test coverage is below 70%. Coverage is $COVERAGE%."
+            exit 1  # Interrompe o processo caso a cobertura seja abaixo de 70%
+          fi
+          echo "Test coverage is sufficient: $COVERAGE%"

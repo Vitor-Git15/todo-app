@@ -2,6 +2,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { TagCreateDto, TagUpdateDto } from "src/domain/dto/tag.dto";
 import { Tag } from "src/domain/entities/tag.entity";
 import { Repository } from "typeorm";
+import { EntityNotFoundError } from 'src/domain/erros/entity_not_found.error';
 
 export class TagService {
     constructor(
@@ -20,6 +21,9 @@ export class TagService {
 
     async update(tagDto: TagUpdateDto): Promise<Tag> {
         const tag = await this.tagRepository.findOneBy({ id: tagDto.id });
+        if (!tag) {
+            throw new EntityNotFoundError('Tag', 'No tag with the given ID was found');
+        }
         tag.name = tagDto.name;
         return await this.tagRepository.save(tag);
     }

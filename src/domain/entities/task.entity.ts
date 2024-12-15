@@ -55,7 +55,7 @@ export class Task extends BaseEntity {
         await this.setTags(taskUpdateDto.tagsIds, tagRepository);
     }
 
-    protected async setStatus(statusId: string, statusRepository: Repository<Status>) {
+    public async setStatus(statusId: string, statusRepository: Repository<Status>) {
         const status = await statusRepository.findOneBy({ id: statusId });
         if (!status) throw new EntityNotFoundError(Status.constructor.name);
         this.status = status;
@@ -84,7 +84,7 @@ export class Task extends BaseEntity {
         this.creator = creator;
     }
 
-    protected async setAssignedUsers(assignedUserIds: string[], userRepository: Repository<User>) {
+    public async setAssignedUsers(assignedUserIds: string[], userRepository: Repository<User>) {
         const assignedUsers = await Promise.all(
             assignedUserIds.map(async userId => {
                 const user = await userRepository.findOneBy({ id: userId });
