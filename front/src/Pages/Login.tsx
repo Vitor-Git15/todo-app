@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Input, Button, Form, Space, Typography } from "antd";
+import constants from "../Constants.json";
 
 const { Text } = Typography; // Destructure Text component from Typography
 
@@ -13,6 +14,8 @@ const Login = () => {
   const handleSubmit = () => {
     console.log("Username:", username);
     console.log("Password:", password);
+
+    console.log("API URL:", constants.API_URL);
 
     navigate("/");
   };
