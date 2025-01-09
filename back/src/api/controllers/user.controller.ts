@@ -35,4 +35,9 @@ export class UserController {
     async deleteUser(@Query('id') id: string): Promise<void> {
         return this.userService.delete(id);
     }
+
+    @Get('email')
+    async getUserByEmail(@Query('email') email: string): Promise<UserReturnDto> {
+        return new UserReturnDto(await this.userService.findByEmail(email));
+    }
 }
