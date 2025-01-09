@@ -10,7 +10,6 @@ const Login = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const handleSubmit = () => {
     console.log("Username:", username);
     console.log("Password:", password);
