@@ -1,22 +1,40 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Input, Button, Form, Space, Typography } from "antd";
-import constants from "../Constants.json";
+import {
+  Card,
+  Input,
+  Button,
+  Form,
+  Space,
+  Typography,
+  notification,
+} from "antd";
+import axios from "axios";
 
 const { Text } = Typography; // Destructure Text component from Typography
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleSubmit = () => {
-    console.log("Username:", username);
-    console.log("Password:", password);
 
-    console.log("API URL:", constants.API_URL);
-
-    navigate("/");
+  const handleSubmit = async () => {
+    await axios
+      .get(
+        `http://localhost:3000/users/authenticate?email=${email}&password=${password}`
+      )
+      .then((response) => {
+        localStorage.setItem("userId", response.data);
+        navigate("/");
+      })
+      .catch(() => {
+        notification.error({
+          message: "Error",
+          description: "Invalid email or password.",
+          placement: "topRight",
+        });
+      });
   };
 
   return (
@@ -28,13 +46,13 @@ const Login = () => {
           initialValues={{ username: "", password: "" }}
         >
           <Form.Item
-            name="username"
-            rules={[{ required: true, message: "Please enter your username!" }]}
+            name="email"
+            rules={[{ required: true, message: "Please enter your email!" }]}
           >
             <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
             />
           </Form.Item>
 
