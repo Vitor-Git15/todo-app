@@ -9,6 +9,7 @@ import {
   Typography,
   notification,
 } from "antd";
+import axios from "axios";
 
 const { Text } = Typography;
 
@@ -20,19 +21,46 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = () => {
-    console.log("Username:", username);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
+  const handleSubmit = async () => {
+    let userAlreadyExists = false;
 
-    notification.success({
-      message: "User Successfully Created",
-      description: "Your account has been created. You can now log in.",
-      placement: "topRight",
-    });
+    await axios
+      .get(`http://localhost:3000/users/email?email=${email}`)
+      .then(() => {
+        notification.error({
+          message: "Error",
+          description: "An account with this email already exists.",
+          placement: "topRight",
+        });
 
-    navigate("/login");
+        userAlreadyExists = true;
+      })
+      .catch(() => {});
+
+    if (userAlreadyExists) return;
+
+    await axios
+      .post("http://localhost:3000/users", {
+        username: username,
+        email: email,
+        password: password,
+      })
+      .then(() => {
+        notification.success({
+          message: "User Successfully Created",
+          description: "Your account has been created. You can now log in.",
+          placement: "topRight",
+        });
+
+        navigate("/login");
+      })
+      .catch(() => {
+        notification.error({
+          message: "Error",
+          description: "An error occurred while creating your account.",
+          placement: "topRight",
+        });
+      });
   };
 
   return (

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Query, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Query, Delete, HttpException, HttpStatus } from '@nestjs/common';
 import { UserService } from 'src/application/services/user.service';
 import { ChangePasswordDto } from 'src/domain/dto/change_password.dto';
 import { UserReturnDto, UserCreateDto } from 'src/domain/dto/user.dto';
@@ -38,6 +38,12 @@ export class UserController {
 
     @Get('email')
     async getUserByEmail(@Query('email') email: string): Promise<UserReturnDto> {
-        return new UserReturnDto(await this.userService.findByEmail(email));
+        const user = await this.userService.findByEmail(email);
+        
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        
+        return new UserReturnDto(user);
     }
 }
