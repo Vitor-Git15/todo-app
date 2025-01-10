@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -11,30 +11,39 @@ import {
 } from "antd";
 import axios from "axios";
 
-const { Text } = Typography; // Destructure Text component from Typography
+const { Text } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async () => {
-    await axios
-      .get(
+    try {
+      const response = await axios.get(
         `http://localhost:3000/users/authenticate?email=${email}&password=${password}`
-      )
-      .then((response) => {
-        localStorage.setItem("userId", response.data);
+      );
+      const userId = response.data;
+      localStorage.setItem("userId", userId);
+
+      // Recupera o estado da homepage do backend (se existir)
+      try {
+        const res = await axios.get(`http://localhost:3000/users/${userId}/homepage`);
+        const savedTodos = res.data.todos;
+        if (savedTodos) {
+          localStorage.setItem("homepageTodos", JSON.stringify(savedTodos));
+        }
         navigate("/");
-      })
-      .catch(() => {
-        notification.error({
-          message: "Error",
-          description: "Invalid email or password.",
-          placement: "topRight",
-        });
+      } catch {
+        navigate("/"); // Continua mesmo que não tenha estado salvo
+      }
+    } catch {
+      notification.error({
+        message: "Error",
+        description: "Invalid email or password.",
+        placement: "topRight",
       });
+    }
   };
 
   return (

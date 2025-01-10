@@ -20,7 +20,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
     if (title && description && dueDate) {
       const newTodo: Todo = {
         id: Date.now(),
-        text: title,
+        title,
         description,
         completed: false,
         dueDate,

@@ -1,27 +1,56 @@
 import React, { useState } from "react";
 import { Layout, Menu, Typography, Dropdown, message } from "antd";
 import { HomeOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 const MenuBar = () => {
   const [username, setUsername] = useState("Guest");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para verificar se o usuário está logado
+  const navigate = useNavigate(); // Hook para navegação
 
   const handleLogout = () => {
     message.success("Logged out successfully");
     setUsername("Guest");
+    setIsLoggedIn(false);
   };
 
-  // Dropdown menu items
-  const menuItems = [
-    {
-      key: "logout",
-      label: "Logout",
-      onClick: handleLogout,
-    },
-  ];
+  const handleLogin = () => {
+    navigate("/login"); // Redireciona para a página de login
+  };
+
+  const handleSignUp = () => {
+    navigate("/register"); // Redireciona para a página de registro
+  };
+
+  // Menu de dropdown baseado no estado de login
+  const menuItems = isLoggedIn
+    ? [
+        {
+          key: "profile",
+          label: "Profile",
+          // Coloque aqui a lógica de navegação ou exibição de informações do perfil
+        },
+        {
+          key: "logout",
+          label: "Logout",
+          onClick: handleLogout,
+        },
+      ]
+    : [
+        {
+          key: "login",
+          label: "Sign In",
+          onClick: handleLogin,
+        },
+        {
+          key: "signup",
+          label: "Sign Up",
+          onClick: handleSignUp,
+        },
+      ];
 
   return (
     <Layout>

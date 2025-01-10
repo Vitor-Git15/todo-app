@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddTaskModal from "../Components/AddTaskModal.tsx";
 import EditTaskModal from "../Components/EditTaskModal.tsx";
 import Column from "../Components/Column.tsx";
@@ -8,6 +8,19 @@ const HomePage: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+
+  // Carregar estado salvo ao montar o componente
+  useEffect(() => {
+    const savedTodos = localStorage.getItem("homepageTodos");
+    if (savedTodos) {
+      setTodos(JSON.parse(savedTodos));
+    }
+  }, []);
+
+  // Salvar estado atual sempre que mudar
+  useEffect(() => {
+    localStorage.setItem("homepageTodos", JSON.stringify(todos));
+  }, [todos]);
 
   const addTodo = (newTodo: Todo) => {
     setTodos([...todos, { ...newTodo, status: "tarefas" }]);
@@ -47,7 +60,7 @@ const HomePage: React.FC = () => {
     const diffInDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
     if (diffInDays <= 2) return "red";
-    if (diffInDays <= 7) return "yellow";
+    if (diffInDays <= 7) return "#FFA500";
     if (diffInDays > 7) return "#87CEFA"; // Azul claro (para prazo longo)
     return "green";
   };
