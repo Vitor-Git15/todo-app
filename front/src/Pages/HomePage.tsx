@@ -1,21 +1,35 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AddTaskModal from "../Components/AddTaskModal.tsx";
 import EditTaskModal from "../Components/EditTaskModal.tsx";
 import Column from "../Components/Column.tsx";
 import { Todo } from "../Types/Todo.ts";
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [userId, setUserId] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
 
   // Carregar estado salvo ao montar o componente
   useEffect(() => {
-    const savedTodos = localStorage.getItem("homepageTodos");
-    if (savedTodos) {
-      setTodos(JSON.parse(savedTodos));
+    const _userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      navigate("/login");
     }
+
+    setUserId(_userId);
   }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    // TODO
+    // get necessary info from backend
+  }, [userId]);
 
   // Salvar estado atual sempre que mudar
   useEffect(() => {
@@ -38,9 +52,7 @@ const HomePage: React.FC = () => {
 
   const handleEditTodo = (editedTodo: Todo) => {
     setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
-        todo.id === editedTodo.id ? editedTodo : todo
-      )
+      prevTodos.map((todo) => (todo.id === editedTodo.id ? editedTodo : todo))
     );
     setEditingTodo(null);
   };
@@ -57,7 +69,9 @@ const HomePage: React.FC = () => {
 
     const today = new Date();
     const due = new Date(dueDate);
-    const diffInDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const diffInDays = Math.ceil(
+      (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     if (diffInDays <= 2) return "red";
     if (diffInDays <= 7) return "#FFA500";
@@ -87,9 +101,13 @@ const HomePage: React.FC = () => {
         {["tarefas", "em_progresso", "feita"].map((status, index) => (
           <Column
             key={index}
-            title={status.charAt(0).toUpperCase() + status.slice(1).replace("_", " ")}
+            title={
+              status.charAt(0).toUpperCase() + status.slice(1).replace("_", " ")
+            }
             todos={getTodosByStatus(status as Todo["status"])}
-            onDrop={(todoId) => handleMoveTodo(todoId, status as Todo["status"])}
+            onDrop={(todoId) =>
+              handleMoveTodo(todoId, status as Todo["status"])
+            }
             onEdit={setEditingTodo}
             onDelete={handleDeleteTodo}
             calculateTaskColor={calculateTaskColor}
