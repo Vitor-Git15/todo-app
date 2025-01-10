@@ -4,28 +4,73 @@ import AddTaskModal from "../Components/AddTaskModal.tsx";
 import EditTaskModal from "../Components/EditTaskModal.tsx";
 import Column from "../Components/Column.tsx";
 import { Todo } from "../Types/Todo.ts";
+import axios from "axios";
+import { notification } from "antd";
+import useStore from "../useStore.js";
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
 
-  const [userId, setUserId] = useState<string | null>(null);
+  const { userId } = useStore();
+  const { setUser } = useStore();
+
+  const [createdTasks, setCreatedTasks] = useState<Todo[]>([]);
+  const [assignedTasks, setAssignedTasks] = useState<Todo[]>([]);
+
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
 
   // Carregar estado salvo ao montar o componente
   useEffect(() => {
-    const _userId = localStorage.getItem("userId");
-
     if (!userId) {
       navigate("/login");
     }
-
-    setUserId(_userId);
   }, []);
 
   useEffect(() => {
     if (!userId) return;
+
+    axios
+      .get(`http://localhost:3000/users/id?id=${userId}`)
+      .then((response) => {
+        setUser(response.data);
+      })
+      .catch(() => {
+        notification.error({
+          message: "Error",
+          description: "Failed to load user data.",
+          placement: "topRight",
+        });
+      });
+
+    axios
+      .get(`http://localhost:3000/tasks/creator/${userId}`)
+      .then((response) => {
+        setCreatedTasks(response.data);
+        console.log(response.data);
+      })
+      .catch(() => {
+        notification.error({
+          message: "Error",
+          description: "Failed to load created tasks.",
+          placement: "topRight",
+        });
+      });
+
+    axios
+      .get(`http://localhost:3000/tasks/assignee/${userId}`)
+      .then((response) => {
+        setAssignedTasks(response.data);
+        console.log(response.data);
+      })
+      .catch(() => {
+        notification.error({
+          message: "Error",
+          description: "Failed to load assigned tasks.",
+          placement: "topRight",
+        });
+      });
 
     // TODO
     // get necessary info from backend

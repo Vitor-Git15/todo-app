@@ -1,15 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Menu, Typography, Dropdown, message } from "antd";
 import { HomeOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
+import useStore from "../useStore";
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 const MenuBar = () => {
+  const { user } = useStore();
+
   const [username, setUsername] = useState("Guest");
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para verificar se o usuário está logado
   const navigate = useNavigate(); // Hook para navegação
+
+  useEffect(() => {
+    if (user) {
+      setUsername(user.username);
+      setIsLoggedIn(true);
+    }
+  }, [user]);
 
   const handleLogout = () => {
     message.success("Logged out successfully");
@@ -54,7 +64,13 @@ const MenuBar = () => {
 
   return (
     <Layout>
-      <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         {/* Logo e nome TodoList */}
         <div style={{ display: "flex", alignItems: "center" }}>
           <img
@@ -62,7 +78,11 @@ const MenuBar = () => {
             alt="Logo"
             style={{ height: "40px", marginRight: "10px" }}
           />
-          <Text style={{ color: "white", fontSize: "20px", fontWeight: "bold" }}>TodoList</Text>
+          <Text
+            style={{ color: "white", fontSize: "20px", fontWeight: "bold" }}
+          >
+            TodoList
+          </Text>
         </div>
 
         {/* Menu no lado direito */}
@@ -90,7 +110,11 @@ const MenuBar = () => {
                 <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
                   <button
                     onClick={(e) => e.preventDefault()}
-                    style={{ background: "none", border: "none", color: "inherit" }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "inherit",
+                    }}
                   >
                     <Text style={{ color: "white" }}>
                       <UserOutlined /> {username}

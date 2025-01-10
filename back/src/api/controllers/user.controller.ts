@@ -46,4 +46,15 @@ export class UserController {
         
         return new UserReturnDto(user);
     }
+
+    @Get('id')
+    async getUserById(@Query('id') id: string): Promise<UserReturnDto> {
+        const user = await this.userService.findById(id);
+        
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        
+        return new UserReturnDto(user);
+    }
 }

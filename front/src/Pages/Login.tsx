@@ -10,11 +10,14 @@ import {
   notification,
 } from "antd";
 import axios from "axios";
+import useStore from "../useStore";
 
 const { Text } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setUserId } = useStore();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -24,19 +27,9 @@ const Login = () => {
         `http://localhost:3000/users/authenticate?email=${email}&password=${password}`
       );
       const userId = response.data;
-      localStorage.setItem("userId", userId);
+      setUserId(userId);
 
-      // Recupera o estado da homepage do backend (se existir)
-      try {
-        const res = await axios.get(`http://localhost:3000/users/${userId}/homepage`);
-        const savedTodos = res.data.todos;
-        if (savedTodos) {
-          localStorage.setItem("homepageTodos", JSON.stringify(savedTodos));
-        }
-        navigate("/");
-      } catch {
-        navigate("/"); // Continua mesmo que não tenha estado salvo
-      }
+      navigate("/");
     } catch {
       notification.error({
         message: "Error",
