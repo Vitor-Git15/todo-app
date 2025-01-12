@@ -7,6 +7,7 @@ import { UserWithSameEmailAlreadyExistsError } from 'src/domain/erros/user_with_
 import { UserCreateDto } from 'src/domain/dto/user.dto';
 import { ChangePasswordDto } from 'src/domain/dto/change_password.dto';
 import { EntityNotFoundError } from 'src/domain/erros/entity_not_found.error';
+import { ReusedPasswordError } from 'src/domain/erros/reused_password.error';
 
 @Injectable()
 export class UserService {
@@ -33,6 +34,8 @@ export class UserService {
         const user = await this.userRepository.findOneBy({ id: userId });
 
         if (!user) throw new EntityNotFoundError(User.constructor.name);
+        if (user.password === newPassword) throw new ReusedPasswordError();
+
         user.password = newPassword;
 
         return this.userRepository.save(user);
@@ -43,7 +46,7 @@ export class UserService {
 
         if (!user) throw new EntityNotFoundError(User.constructor.name);
 
-        await this.userRepository
+        await this.userRepository.remove(user);
     }
 
     async authenticate(email: string, password: string): Promise<string> {

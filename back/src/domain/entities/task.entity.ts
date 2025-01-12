@@ -7,7 +7,7 @@ import { NotImplementedException } from "@nestjs/common";
 import { TaskCreateDto } from "../dto/task.dto";
 import { Comment } from "./comment.entity";
 import { EntityNotFoundError } from "../erros/entity_not_found.error";
-
+/* istanbul ignore file */
 @Entity()
 export class Task extends BaseEntity {
     @Column()

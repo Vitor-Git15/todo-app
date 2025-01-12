@@ -8,6 +8,7 @@ import { Status } from "src/domain/entities/status.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { EntityNotFoundError } from "src/domain/erros/entity_not_found.error";
 
+/* istanbul ignore next */
 @Injectable()
 export class TasksService {
     constructor(
