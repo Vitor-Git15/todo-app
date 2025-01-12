@@ -25,13 +25,14 @@ jobs:
         with:
           node-version: '16'  # Use a versão do Node.js que você está utilizando
 
+      - name: Navigate to backend directory
+        run: cd back  # Muda para a pasta onde o package.json está localizado
+
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install  # Instala as dependências no diretório ./back
 
       - name: Run tests with coverage
-        run: |
-          npm run test -- --coverage  # Execute seus testes com cobertura
+        run: npm run test -- --coverage  # Execute seus testes com cobertura
 
       - name: Check coverage threshold
         run: |
@@ -41,7 +42,6 @@ jobs:
             exit 1  # Interrompe a execução se a cobertura for menor que 70%
           fi
           echo "Test coverage is sufficient: $COVERAGE%"
-
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
